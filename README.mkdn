@@ -1,0 +1,14 @@
+Droid Concepts Settings [DCS]
+==============================
+
+What is it?
+==============================
+'DCS', is a unique settings app specifically for the Droid Concepts series of Android ROMs. DCS aims to provide the end user with easy to use stable features, along with some cutting edge features. All features in the main app are stable and safe to use. Any features that you may use in the Advanced Features [name subject to change when it is implemented] part of the app are not guaranteed to work, so you use those features at YOUR OWN RISK. DCS does not aim to copy the settings found in 'CMParts' but, of course DCS will contain some of the same features.
+
+Is it a renamed CMParts?
+==============================
+HELL NO, we did not in anyway use 'CMParts' in DCS, the only way in which we used 'CMParts' in DCS is for feature ideas. DCS has been built from the ground up and you can follow its progress through its github commits located at the link at the bottom of this README file.
+
+Credits [Alphabetical]
+==============================
+>     MisterE
