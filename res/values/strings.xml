@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Droid Concepts Settings</string>
+    <string name="hello">This is Droid Concepts Settings</string>
 </resources>
