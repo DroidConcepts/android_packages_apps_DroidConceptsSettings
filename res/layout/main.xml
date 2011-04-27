@@ -1,12 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
     android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
-    >
-<TextView  
-    android:layout_width="fill_parent" 
-    android:layout_height="wrap_content" 
-    android:text="@string/hello"
-    />
+    android:orientation="vertical" android:layout_height="wrap_content">
+    
+<TableLayout 
+	android:id="@+id/tableLayout1" 
+	android:layout_height="wrap_content" 
+	android:layout_width="match_parent">
+	
+	<TextView 
+		android:text="About ROM" 
+		android:textSize="30dp"
+		android:id="@+id/about_rom" 
+		android:layout_width="wrap_content" 
+		android:layout_height="wrap_content"
+		android:clickable="true">
+	</TextView>
+	
+	<TextView 
+		android:text="Directory" 
+		android:textSize="40dp"
+		android:id="@+id/directory" 
+		android:layout_width="wrap_content" 
+		android:layout_height="wrap_content">
+	</TextView>
+	
+	<TextView 
+		android:text="test" 
+		android:id="@+id/test"
+		android:textSize="20dp"
+		android:layout_width="wrap_content" 
+		android:layout_height="wrap_content">
+	</TextView>
+
+</TableLayout>
+
 </LinearLayout>
