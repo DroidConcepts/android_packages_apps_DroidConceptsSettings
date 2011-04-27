@@ -1,4 +1,4 @@
-package com.droidconcepts.settings.com.droidconcepts;
+package com.droidconcepts.settings;
 
 import com.droidconcepts.settings.R;
 
