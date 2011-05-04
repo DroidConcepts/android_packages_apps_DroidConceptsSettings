@@ -11,4 +11,6 @@ HELL NO, we did not in anyway use 'CMParts' in DCS, the only way in which we use
 
 Credits [Alphabetical]
 ==============================
+>     CVPCS [CPU SCALE, INITIAL]
+>     CyanogenMod [FINAL CPU]
 >     MisterE
