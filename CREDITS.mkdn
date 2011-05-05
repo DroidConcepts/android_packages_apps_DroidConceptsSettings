@@ -1,0 +1,15 @@
+Droid Concepts Settings [DCS]
+================================
+Below you will find a list of credits for the Droid Concepts Settings App. We are attempting to build as much as we can from scratch, but of course there are times where the code is not flawed and runs code as it is, or times when the code simply cannot be changed. So as parts of the app may look just like CM source, it has in fact been done by Droid Concepts. There is nothing we can do to get away from this because Android uses the same code and there's only so much variation we can do to achieve the same effects that CM introduced, and that we feel are very helpful. So a big THANKS goes out to the entire CyanogenMod team who originally wrote a lot of code for tons of great features. 
+
+Credits List [Alphabetical]
+================================
+>     CVPCS
+>     CyanogenMod
+>     MisterE
+
+How They Helped [Alphabetical]
+=================================
+>     CVPCS - Original CPU scale code
+>     CyanogenMod - Final CPU scale code
+>     MisterE - Porting to the Droid COncepts ROM

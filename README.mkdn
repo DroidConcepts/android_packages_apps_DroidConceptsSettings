@@ -9,8 +9,5 @@ Is it a renamed CMParts?
 ==============================
 HELL NO, we did not in anyway use 'CMParts' in DCS, the only way in which we used 'CMParts' in DCS is for feature ideas. DCS has been built from the ground up and you can follow its progress through its github commits located at the link at the bottom of this README file.
 
-Credits [Alphabetical]
-==============================
->     CVPCS [CPU SCALE, INITIAL]
->     CyanogenMod [FINAL CPU]
->     MisterE
+
+>     https://github.com/DroidConcepts/android_packages_apps_DroidConceptsSettings/commits/froyo/
