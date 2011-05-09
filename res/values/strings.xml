@@ -2,6 +2,14 @@
 <resources>
     <string name="app_name">Droid Concepts Settings</string>
 
+<!-- Performance Settings -->
+    <string name="performance_settings_title">Performance settings</string>
+    <string name="performance_title">Performance Settings</string>
+    <string name="performance_settings_summary">Device performance tweaks</string>
+    <!-- Lock home memory -->
+    <string name="pref_lock_home_title">Lock home in memory</string>
+    <string name="pref_lock_home_summary">Lock the home app in memory</string>
+
 <!-- CPU Settings strings -->
     <string name="cpu_settings_title">CPU settings</string>
     <string name="cpu_title">CPU settings</string>
