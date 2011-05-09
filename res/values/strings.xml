@@ -9,6 +9,9 @@
     <!-- Lock home memory -->
     <string name="pref_lock_home_title">Lock home in memory</string>
     <string name="pref_lock_home_summary">Lock the home app in memory</string>
+    <!-- Lock mms/sms in memory -->
+    <string name="pref_lock_mms_title">Lock messaging app in memory</string>
+    <string name="pref_lock_mms_summary">Lock the messaging app in memory</string>
 
 <!-- CPU Settings strings -->
     <string name="cpu_settings_title">CPU settings</string>
