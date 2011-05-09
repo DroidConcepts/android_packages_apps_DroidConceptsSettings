@@ -23,10 +23,10 @@ public class PerformanceSettingsActivity extends PreferenceActivity {
     
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);    
+        super.onCreate(savedInstanceState);        
         setTitle(R.string.performance_title);
         addPreferencesFromResource(R.xml.performance_settings);       
-        PreferenceScreen prefSet = getPreferenceScreen();
+        PreferenceScreen prefSet = getPreferenceScreen(); 
 
         mLockHomePref = (CheckBoxPreference) prefSet.findPreference(LOCK_HOME_PREF);
         mLockHomePref.setChecked(Settings.System.getInt(getContentResolver(),
@@ -35,12 +35,13 @@ public class PerformanceSettingsActivity extends PreferenceActivity {
     
     @Override
     public boolean onPreferenceTreeClick(PreferenceScreen preferenceScreen, Preference preference) {
-
         if (preference == mLockHomePref) {
             Settings.System.putInt(getContentResolver(),
                     Settings.System.LOCK_HOME_IN_MEMORY, mLockHomePref.isChecked() ? 1 : 0);
             return true;
         }
-}
+
+        return false;
+    }
 
 }
