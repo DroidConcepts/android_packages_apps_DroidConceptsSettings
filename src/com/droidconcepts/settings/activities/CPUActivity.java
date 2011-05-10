@@ -3,12 +3,15 @@ package com.droidconcepts.settings.activities;
 import com.droidconcepts.settings.R;
 
 import android.os.Bundle;
+import android.os.SystemProperties;
+import android.provider.Settings;
 import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceScreen;
 import android.util.Log;
 
+import java.io.File;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.FileWriter;
@@ -20,17 +23,17 @@ import java.io.IOException;
 public class CPUActivity extends PreferenceActivity implements
         Preference.OnPreferenceChangeListener {
 
-    public static final String GOV_PREF = "pref_cpu_gov";
-    public static final String GOVERNORS_LIST_FILE = "/sys/devices/system/cpu/cpu0/cpufreq/scaling_available_governors";
-    public static final String GOVERNOR = "/sys/devices/system/cpu/cpu0/cpufreq/scaling_governor";
-    public static final String MIN_FREQ_PREF = "pref_freq_min";
-    public static final String MAX_FREQ_PREF = "pref_freq_max";
-    public static final String FREQ_LIST_FILE = "/sys/devices/system/cpu/cpu0/cpufreq/scaling_available_frequencies";
-    public static final String FREQ_MAX_FILE = "/sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq";
-    public static final String FREQ_MIN_FILE = "/sys/devices/system/cpu/cpu0/cpufreq/scaling_min_freq";
-    public static final String SOB_PREF = "pref_set_on_boot";
+    public static final String GOV_PREF                  = "pref_cpu_gov";
+    public static final String GOVERNORS_LIST_FILE       = "/sys/devices/system/cpu/cpu0/cpufreq/scaling_available_governors";
+    public static final String GOVERNOR                  = "/sys/devices/system/cpu/cpu0/cpufreq/scaling_governor";
+    public static final String MIN_FREQ_PREF             = "pref_freq_min";
+    public static final String MAX_FREQ_PREF             = "pref_freq_max";
+    public static final String FREQ_LIST_FILE            = "/sys/devices/system/cpu/cpu0/cpufreq/scaling_available_frequencies";
+    public static final String FREQ_MAX_FILE             = "/sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq";
+    public static final String FREQ_MIN_FILE             = "/sys/devices/system/cpu/cpu0/cpufreq/scaling_min_freq";
+    public static final String SOB_PREF                  = "pref_set_on_boot";
 
-    private static final String TAG = "CPUSettings";
+    private static final String TAG                      = "CPUSettings";
 
     private String mGovernorFormat;
     private String mMinFrequencyFormat;
