@@ -20,7 +20,7 @@
 </PreferenceCategory>
 
 <!-- Android Development Tools -->
-<PreferenceCategory android:title="@string/android-dev_title">
+<PreferenceCategory android:title="@string/android_dev_title">
     <PreferenceScreen android:key="development"
                       android:title="@string/development_title" 
                       android:summary="@string/development_summary">
