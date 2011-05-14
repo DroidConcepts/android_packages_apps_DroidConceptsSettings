@@ -14,9 +14,5 @@ public class MainActivity extends PreferenceActivity {
         super.onCreate(savedInstanceState);
 
         addPreferencesFromResource(R.xml.dcs);
-
-       findPreference("changelog").setSummary(getString(R.string.changelog_version) + ": " +
-            SystemProperties.get("ro.buildnumber", getResources().getString(R.string.changelog_unknown)));
-
     }
 }
