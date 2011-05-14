@@ -6,10 +6,8 @@
     <string name="performance_settings_title">Performance settings</string>
     <string name="performance_title">Performance Settings</string>
     <string name="performance_settings_summary">Device performance tweaks</string>
-    <!-- Lock home memory -->
     <string name="pref_lock_home_title">Lock home in memory</string>
     <string name="pref_lock_home_summary">Lock the home app in memory</string>
-    <!-- Lock mms/sms in memory -->
     <string name="pref_lock_mms_title">Lock messaging app in memory</string>
     <string name="pref_lock_mms_summary">Lock the messaging app in memory</string>
 
@@ -29,11 +27,29 @@
 <!-- Android Development Strings -->
     <string name="android_dev_title">Android Development Tools</string>
     <string name="development_title">Development</string>
-    <string name="development_summary"></string>
     <string name="spareparts_title">Spare Parts</string>
-    <string name="spareparts_summary"></string>
     <string name="terminal_title">Terminal</string>
-    <string name="terminal_summary"></string>
+
+<!-- General Info Strings -->
+   <string name="info_title">General ROM Info</string>
+   <string name="changelog_title">View Changelog</string>
+   <string name="changelog_dialog">Changelog</string>
+   <string name="changelog_loading">Loading Changelog...</string>
+   <string name="changelog_error">Error loading changelog...</string>
+   <string name="changelog_unknown">Unknown</string>
+   <string name="changelog_version">Version</string>
+   <string name="credits_title">View Credits</string>
+   <string name="credits_dialog">Credits</string>
+   <string name="credits_loading">Loading Credits...</string>
+   <string name="credits_error">Error loading credits...</string>
+   <string name="credits_unknown">Unknown</string>
+   <string name="credits_version">Version</string>
+   <string name="license_title">View License</string>
+   <string name="license_dialog">License</string>
+   <string name="license_loading">Loading License...</string>
+   <string name="license_error">Error loading license...</string>
+   <string name="license_unknown">Unknown</string>
+   <string name="license_version">Version</string>
 
 </resources>
 

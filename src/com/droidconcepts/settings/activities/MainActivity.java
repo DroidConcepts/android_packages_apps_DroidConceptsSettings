@@ -1,6 +1,7 @@
 package com.droidconcepts.settings.activities;
 
 import android.os.Bundle;
+import android.os.SystemProperties;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
 
@@ -13,5 +14,9 @@ public class MainActivity extends PreferenceActivity {
         super.onCreate(savedInstanceState);
 
         addPreferencesFromResource(R.xml.dcs);
+
+       findPreference("changelog").setSummary(getString(R.string.changelog_version) + ": " +
+            SystemProperties.get("ro.buildnumber", getResources().getString(R.string.changelog_unknown)));
+
     }
 }

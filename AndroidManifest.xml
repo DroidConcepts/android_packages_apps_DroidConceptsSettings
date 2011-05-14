@@ -39,6 +39,24 @@
             </intent-filter>
     </activity>
 
+    <activity android:name=".activities.ChangeLog">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+            </intent-filter>
+    </activity>
+
+    <activity android:name=".activities.Credits">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+            </intent-filter>
+    </activity>
+
+    <activity android:name=".activities.License">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+            </intent-filter>
+    </activity>
+
 </application>
 
 </manifest>
