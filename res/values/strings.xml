@@ -30,26 +30,5 @@
     <string name="spareparts_title">Spare Parts</string>
     <string name="terminal_title">Terminal</string>
 
-<!-- General Info Strings -->
-   <string name="info_title">General ROM Info</string>
-   <string name="changelog_title">View Changelog</string>
-   <string name="changelog_dialog">Changelog</string>
-   <string name="changelog_loading">Loading Changelog...</string>
-   <string name="changelog_error">Error loading changelog...</string>
-   <string name="changelog_unknown">Unknown</string>
-   <string name="changelog_version">Version</string>
-   <string name="credits_title">View Credits</string>
-   <string name="credits_dialog">Credits</string>
-   <string name="credits_loading">Loading Credits...</string>
-   <string name="credits_error">Error loading credits...</string>
-   <string name="credits_unknown">Unknown</string>
-   <string name="credits_version">Version</string>
-   <string name="license_title">View License</string>
-   <string name="license_dialog">License</string>
-   <string name="license_loading">Loading License...</string>
-   <string name="license_error">Error loading license...</string>
-   <string name="license_unknown">Unknown</string>
-   <string name="license_version">Version</string>
-
 </resources>
 

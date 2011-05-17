@@ -41,29 +41,4 @@
     </PreferenceScreen>
 </PreferenceCategory>
 
-<!-- General Info -->
-<PreferenceCategory android:title="@string/info_title">
-    <PreferenceScreen
-        android:key="changelog"
-            android:title="@string/changelog_title">
-        <intent android:action="android.intent.action.MAIN"
-            android:targetPackage="com.droidconcepts.settings"
-            android:targetClass="com.droidconcepts.settings.activities.ChangeLog" />
-    </PreferenceScreen>
-    <PreferenceScreen
-        android:key="credits"
-            android:title="@string/credits_title">
-        <intent android:action="android.intent.action.MAIN"
-            android:targetPackage="com.droidconcepts.settings"
-            android:targetClass="com.droidconcepts.settings.activities.Credits" />
-    </PreferenceScreen>
-    <PreferenceScreen
-        android:key="license"
-            android:title="@string/license_title">
-        <intent android:action="android.intent.action.MAIN"
-            android:targetPackage="com.droidconcepts.settings"
-            android:targetClass="com.droidconcepts.settings.activities.License" />
-    </PreferenceScreen>
-</PreferenceCategory>
-
 </PreferenceScreen>
