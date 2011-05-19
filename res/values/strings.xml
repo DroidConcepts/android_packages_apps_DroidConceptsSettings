@@ -25,8 +25,8 @@
     <string name="cpu_set_on_boot_summary">Restore CPU settings on boot</string>	
 
 <!-- Android Development Strings -->
-    <string name="android_dev_title">Android Development Tools</string>
-    <string name="development_title">Development</string>
+    <string name="android_dev_title">Development Tools</string>
+    <string name="development_title">Dev Tools</string>
     <string name="spareparts_title">Spare Parts</string>
     <string name="terminal_title">Terminal</string>
 

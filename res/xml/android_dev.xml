@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+<PreferenceCategory android:title="@string/android_dev_title">
+    <PreferenceScreen android:key="development"
+                      android:title="@string/development_title">
+            <intent android:action="android.intent.action.MAIN"
+                    android:targetPackage="com.android.development"
+                    android:targetClass="com.android.development.Development" />
+    </PreferenceScreen>  
+
+    <PreferenceScreen android:key="spare_parts"
+	              android:title="@string/spareparts_title">
+            <intent android:action="android.intent.action.MAIN"
+		    android:targetPackage="com.android.spare_parts"
+		    android:targetClass="com.android.spare_parts.SpareParts" />
+    </PreferenceScreen>
+
+    <PreferenceScreen android:key="terminal"
+	              android:title="@string/terminal_title">
+            <intent android:action="android.intent.action.MAIN"
+		    android:targetPackage="com.android.term"
+		    android:targetClass="com.android.term.Term" />
+    </PreferenceScreen>
+</PreferenceCategory>
+
+</PreferenceScreen>
