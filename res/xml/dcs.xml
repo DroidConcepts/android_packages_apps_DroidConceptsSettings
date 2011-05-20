@@ -29,4 +29,15 @@
     </PreferenceScreen>
 </PreferenceCategory>
 
+<!-- User Interface-->
+<PreferenceCategory android:title="@string/ui_title">
+    <PreferenceScreen android:key="user_interface"
+	              android:title="@string/ui_title"
+                      android:summary="@string/ui_summary">
+            <intent android:action="android.intent.action.MAIN"
+		    android:targetPackage="com.droidconcepts.settings"
+		    android:targetClass="com.droidconcepts.settings.activities.UserInterface" />
+    </PreferenceScreen>
+</PreferenceCategory>
+
 </PreferenceScreen>
