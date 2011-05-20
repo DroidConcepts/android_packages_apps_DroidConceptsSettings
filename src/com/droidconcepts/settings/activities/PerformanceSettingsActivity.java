@@ -2,6 +2,9 @@ package com.droidconcepts.settings.activities;
 
 import com.droidconcepts.settings.R;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
+import android.os.SystemProperties;
 import android.os.Bundle;
 import android.preference.CheckBoxPreference;
 import android.preference.ListPreference;
@@ -9,6 +12,7 @@ import android.preference.Preference;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceScreen;
 import android.provider.Settings;
+import android.preference.PreferenceCategory;
 import android.util.Log;
 
 import java.io.File;

@@ -51,6 +51,30 @@
             </intent-filter>
    </activity>
 
+   <activity android:name=".activities.BatteryClock">
+           <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+            </intent-filter>
+   </activity>
+
+   <activity android:name=".activities.DateProvider">
+           <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+            </intent-filter>
+   </activity>
+
+   <activity android:name=".activities.Notifications">
+           <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+            </intent-filter>
+   </activity>
+
+   <activity android:name=".activities.ExtraTweaks">
+           <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+            </intent-filter>
+   </activity>
+
 </application>
 
 </manifest>
