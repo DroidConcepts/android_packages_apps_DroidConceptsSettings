@@ -2,6 +2,11 @@
 <resources>
     <string name="app_name">Droid Concepts Settings</string>
 
+<!-- End User Licence Agreement Strings -->
+    <string name="eula_title">End User License Agreement</string>
+    <string name="eula_accept">Accept</string>
+    <string name="eula_refuse">Refuse</string>
+
 <!-- Performance Settings -->
     <string name="performance_settings_title">Performance settings</string>
     <string name="performance_title">Performance Settings</string>

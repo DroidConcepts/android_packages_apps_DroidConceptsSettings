@@ -12,7 +12,7 @@ public class MainActivity extends PreferenceActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         addPreferencesFromResource(R.xml.dcs);
+        Eula.show(this);
     }
 }
