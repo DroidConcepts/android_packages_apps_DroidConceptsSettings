@@ -97,7 +97,7 @@
    <string name="title_notifications_items_title">Items title color</string>
    <string name="title_notifications_items_text">Items text color</string>
    <string name="title_notifications_items_time">Items time color</string>
-   <!-- Tweaks Extras -->
+   <!-- Extras Tweaks -->
    <string name="et_title">Extra Tweaks</string>
    <string name="et_title_summary">Extra Tools for Interface Tweaks</string>
    <string name="et_reset">Reset</string>
@@ -120,7 +120,18 @@
    <string name="xml_parse_error">Error parsing XML!</string>
    <string name="xml_invalid_color">Invalid color code in XML!</string>
    <string name="xml_import_success">XML import successful! Reboot to see changes.</string>
-
+  <!-- Notification Bar Colors -->
+   <string name="title_notification_bar">Notification bar</string>
+   <string name="title_custom_not_bar">Custom notification bar</string>
+   <string name="summary_custom_not_bar_on">Using customized notification bar color and style</string>
+   <string name="summary_custom_not_bar_off">Using classic Android notification bar</string>
+   <string name="title_not_bar_color_mask">Bar color</string>
+   <string name="summary_not_bar_color_mask">Note: Transparency (alpha) setting will not be applied</string>
+   <string name="title_custom_exp_not_bar">Custom pulldown bar</string>
+   <string name="summary_custom_exp_not_bar_on">Using customized expanded pulldown bar color and style</string>
+   <string name="summary_custom_exp_not_bar_off">Using classic Android expanded pulldown bar</string>
+   <string name="title_not_exp_bar_color_mask">Pulldown bar color</string>
+   <string name="summary_not_exp_bar_color_mask">Pick a color to apply to elements of the pulldown notification bar</string>
 
 </resources>
 

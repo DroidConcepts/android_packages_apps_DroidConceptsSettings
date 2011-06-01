@@ -22,6 +22,11 @@ public class Notifications extends PreferenceActivity {
     private static final String UI_NOTIF_ITEM_TITLE_COLOR = "notifications_title_color";
     private static final String UI_NOTIF_ITEM_TEXT_COLOR = "notifications_text_color";
     private static final String UI_NOTIF_ITEM_TIME_COLOR = "notifications_time_color";
+    private static final String UI_NOTIF_BAR_COLOR = "not_bar_color_mask";
+    private static final String UI_CUSTOM_NOT_BAR = "custom_not_bar";
+    private static final String UI_CUSTOM_EXPANDED_BAR = "custom_exp_not_bar";
+    private static final String UI_EXP_BAR_COLOR = "not_exp_bar_color_mask"; 
+
 
     private Preference mNotifTickerColor;
     private Preference mNotifCountColor;
@@ -32,6 +37,11 @@ public class Notifications extends PreferenceActivity {
     private Preference mNotifItemTitlePref;
     private Preference mNotifItemTextPref;
     private Preference mNotifItemTimePref;
+    private Preference mNotifBarColorPref;
+    private Preference mExpBarColorPref;
+    private CheckBoxPreference mCustomNotBar;
+    private CheckBoxPreference mCustomExpBar;
+    
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -49,6 +59,10 @@ public class Notifications extends PreferenceActivity {
         mNotifItemTitlePref = prefSet.findPreference(UI_NOTIF_ITEM_TITLE_COLOR);
         mNotifItemTextPref = prefSet.findPreference(UI_NOTIF_ITEM_TEXT_COLOR);
         mNotifItemTimePref = prefSet.findPreference(UI_NOTIF_ITEM_TIME_COLOR);
+        mNotifBarColorPref = prefSet.findPreference(UI_NOTIF_BAR_COLOR);
+        mCustomNotBar = (CheckBoxPreference) prefSet.findPreference(UI_CUSTOM_NOT_BAR);
+        mExpBarColorPref = prefSet.findPreference(UI_EXP_BAR_COLOR);
+        mCustomExpBar = (CheckBoxPreference) prefSet.findPreference(UI_CUSTOM_EXPANDED_BAR);
     }
 
     public boolean onPreferenceTreeClick(PreferenceScreen preferenceScreen, Preference preference) {
@@ -106,6 +120,28 @@ public class Notifications extends PreferenceActivity {
                 mNotifItemTimeColorListener,
                 readNotifItemTimeColor());
             cp.show();
+        }
+        else if (preference == mNotifBarColorPref) {
+            ColorPickerDialog cp = new ColorPickerDialog(this,
+                mNotifBarColorListener,
+                readNotifBarColor());
+            cp.show();
+        }
+        else if (preference == mCustomNotBar) {
+          value = mCustomNotBar.isChecked();
+          Settings.System.putInt(getContentResolver(), 
+              Settings.System.NOTIF_BAR_CUSTOM, value ? 1 : 0);
+        }
+        else if (preference == mCustomExpBar) {
+        	value = mCustomExpBar.isChecked();
+        	Settings.System.putInt(getContentResolver(), 
+        			Settings.System.NOTIF_EXPANDED_BAR_CUSTOM, value ? 1 : 0);
+        }
+        else if (preference == mExpBarColorPref) {
+        	ColorPickerDialog cp = new ColorPickerDialog(this,
+        		mExpBarColorListener,
+        		readExpBarColor());
+        	cp.show();
         }
         return true;
     }
@@ -244,4 +280,34 @@ public class Notifications extends PreferenceActivity {
                 Settings.System.putInt(getContentResolver(), Settings.System.NOTIF_ITEM_TIME_COLOR, color);
             }
     };
+
+    private int readNotifBarColor() {
+        try {
+            return Settings.System.getInt(getContentResolver(), Settings.System.NOTIF_BAR_COLOR);
+        }
+        catch (SettingNotFoundException e) {
+            return -16777216;
+        }
+    }
+    ColorPickerDialog.OnColorChangedListener mNotifBarColorListener = 
+        new ColorPickerDialog.OnColorChangedListener() {
+            public void colorChanged(int color) {
+                Settings.System.putInt(getContentResolver(), Settings.System.NOTIF_BAR_COLOR, color);
+            }
+    };
+    private int readExpBarColor() {
+        try {
+            return Settings.System.getInt(getContentResolver(), Settings.System.NOTIF_EXPANDED_BAR_COLOR);
+        }
+        catch (SettingNotFoundException e) {
+            return -16777216;
+        }
+    }
+    ColorPickerDialog.OnColorChangedListener mExpBarColorListener = 
+        new ColorPickerDialog.OnColorChangedListener() {
+            public void colorChanged(int color) {
+                Settings.System.putInt(getContentResolver(), Settings.System.NOTIF_EXPANDED_BAR_COLOR, color);
+            }
+    };
+
 }
