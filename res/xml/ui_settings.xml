@@ -11,6 +11,26 @@
                             android:title="@string/pref_rotation_270_title" />
     </PreferenceCategory>
 
+<!-- Expanded View Power Widget -->
+   <PreferenceCategory android:title="@string/title_expanded_widget">
+      <CheckBoxPreference android:key="expanded_widget"
+                          android:title="@string/title_expanded_widget"
+                          android:summary="@string/summary_expanded_widget"
+                          android:defaultValue="true" />
+      <Preference android:key="expanded_color_mask"
+                  android:title="@string/expanded_color_mask"
+                  android:summary="@string/expanded_color_mask"
+                  android:defaultValue="-1"
+                  android:dependency="expanded_widget" />
+      <PreferenceScreen android:key="widget_picker"
+                        android:title="@string/title_widget_picker" 
+                        android:summary="@string/summary_widget_picker">
+          <intent android:action="android.intent.action.MAIN"
+                  android:targetPackage="com.droidconcepts.settings"
+                  android:targetClass="com.droidconcepts.settings.activities.WidgetActivity" />
+      </PreferenceScreen>
+   </PreferenceCategory>
+
 <!-- Status Bar Customization -->
     <PreferenceCategory android:title="@string/ui_status_bar">
         <!-- Battery and Clock -->
@@ -38,7 +58,7 @@
                     android:targetClass="com.droidconcepts.settings.activities.Notifications" />
         </PreferenceScreen>
         <!-- Extras -->
-        <PreferenceScreen android:key="tweaks_extras"
+        <PreferenceScreen android:key="extra_tweaks"
                           android:title="@string/et_title" 
                           android:summary="@string/et_title_summary">
             <intent android:action="android.intent.action.MAIN"

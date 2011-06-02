@@ -8,7 +8,7 @@
 <uses-permission android:name="android.permission.WRITE_SECURE_SETTINGS" />
 <uses-permission android:name="android.permission.HARDWARE_TEST" />
 <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" /> 
-<uses-permission android:name="android.permission.HARDWARE_TEST" />
+<uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS"/>
 	
 <receiver android:name=".intents.CPUReceiver" 
               android:enabled="true">
@@ -72,6 +72,12 @@
    </activity>
 
    <activity android:name=".activities.ExtraTweaks">
+           <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+            </intent-filter>
+   </activity>
+
+   <activity android:name=".activities.WidgetActivity">
            <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
             </intent-filter>
