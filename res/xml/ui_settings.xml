@@ -29,6 +29,11 @@
                   android:targetPackage="com.droidconcepts.settings"
                   android:targetClass="com.droidconcepts.settings.activities.WidgetActivity" />
       </PreferenceScreen>
+      <CheckBoxPreference android:key="expanded_hide_onchange"
+                          android:title="@string/title_expanded_hide_onchange"
+                          android:summary="@string/summary_expanded_hide_onchange"
+                          android:defaultValue="false"
+                          android:dependency="expanded_widget" />
    </PreferenceCategory>
 
 <!-- Status Bar Customization -->

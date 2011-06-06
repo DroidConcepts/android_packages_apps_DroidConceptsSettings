@@ -171,7 +171,6 @@ public class WidgetActivity extends PreferenceActivity implements OnPreferenceCh
  
         if (!getResources().getBoolean(R.bool.has_led_flash)) {
             mToggleFlashlight.setEnabled(false);
-            mFlashMode.setEnabled(false);
         }
     }
 

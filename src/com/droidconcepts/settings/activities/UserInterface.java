@@ -23,6 +23,7 @@ public class UserInterface extends PreferenceActivity {
     private static final String UI_EXP_WIDGET = "expanded_widget";
     private static final String UI_EXP_WIDGET_COLOR = "expanded_color_mask";
     private static final String UI_EXP_WIDGET_PICKER = "widget_picker";
+    private static final String UI_EXP_WIDGET_HIDE_ONCHANGE = "expanded_hide_onchange";
 	
     private PreferenceScreen mBatteryClockScreen;
     private PreferenceScreen mDateProviderScreen;
@@ -34,6 +35,7 @@ public class UserInterface extends PreferenceActivity {
     private CheckBoxPreference mPowerWidget;
     private Preference mPowerWidgetColor;
     private PreferenceScreen mPowerPicker;
+    private CheckBoxPreference mPowerWidgetHideOnChange;
 
 
     @Override
@@ -65,6 +67,10 @@ public class UserInterface extends PreferenceActivity {
         mPowerWidget = (CheckBoxPreference) prefSet.findPreference(UI_EXP_WIDGET);
         mPowerWidgetColor = prefSet.findPreference(UI_EXP_WIDGET_COLOR);
         mPowerPicker = (PreferenceScreen)prefSet.findPreference(UI_EXP_WIDGET_PICKER);
+        mPowerWidgetHideOnChange = (CheckBoxPreference)
+                prefSet.findPreference(UI_EXP_WIDGET_HIDE_ONCHANGE);
+        mPowerWidgetHideOnChange.setChecked((Settings.System.getInt(getContentResolver(),
+                Settings.System.EXPANDED_HIDE_ONCHANGE, 0) == 1));
     }
 
     public boolean onPreferenceTreeClick(PreferenceScreen preferenceScreen, Preference preference) {
@@ -107,6 +113,13 @@ public class UserInterface extends PreferenceActivity {
                 readWidgetColor());
             cp.show();
         }
+
+        if(preference == mPowerWidgetHideOnChange) {
+            value = mPowerWidgetHideOnChange.isChecked();
+            Settings.System.putInt(getContentResolver(),
+                    Settings.System.EXPANDED_HIDE_ONCHANGE, value ? 1 : 0);
+        }
+
         return true;
     }
 
