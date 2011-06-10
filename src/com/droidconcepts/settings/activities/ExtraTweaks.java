@@ -33,7 +33,7 @@ public class ExtraTweaks extends PreferenceActivity {
     private static final String UI_RESET_TO_DEFAULTS = "reset_ui_tweaks_to_defaults";
     private Preference mResetToDefaults;
     /* XML */
-    private static final String XML_FILENAME = "user_interface_tweaks.xml";
+    private static final String XML_FILENAME = "droid_concepts_ui.xml";
     private static final String UI_EXPORT_TO_XML = "export_to_xml";
     private Preference mExportToXML;
     private static final String UI_IMPORT_FROM_XML = "import_from_xml";
@@ -42,8 +42,10 @@ public class ExtraTweaks extends PreferenceActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setTitle(R.string.et_title);
         addPreferencesFromResource(R.xml.extra_tweaks);
+
         PreferenceScreen prefSet = getPreferenceScreen();
 
         /* Reset to Defaults */
@@ -127,7 +129,7 @@ public class ExtraTweaks extends PreferenceActivity {
         Settings.System.putInt(getContentResolver(), Settings.System.NOTIF_ITEM_TITLE_COLOR, -16777216);
         Settings.System.putInt(getContentResolver(), Settings.System.NOTIF_ITEM_TEXT_COLOR, -16777216);
         Settings.System.putInt(getContentResolver(), Settings.System.NOTIF_ITEM_TIME_COLOR, -16777216);
-        Settings.System.putInt(getContentResolver(), Settings.System.BATTERY_PERCENTAGE_STATUS_ICON,1);
+        Settings.System.putInt(getContentResolver(), Settings.System.BATTERY_PERCENTAGE_STATUS_ICON,0);
         Settings.System.putInt(getContentResolver(), Settings.System.SHOW_STATUS_CLOCK, 1);
         Settings.System.putInt(getContentResolver(), Settings.System.SHOW_PLMN_LS, 1);
         Settings.System.putInt(getContentResolver(), Settings.System.SHOW_SPN_LS, 1);
@@ -169,7 +171,7 @@ public class ExtraTweaks extends PreferenceActivity {
             
             serializer.setOutput(writer);
             serializer.startDocument("UTF-8", true);
-            serializer.startTag("", "spareparts");
+            serializer.startTag("", "droid_concepts");
             
             int color = -1;
             
@@ -195,7 +197,7 @@ public class ExtraTweaks extends PreferenceActivity {
                 serializer.endTag("", s);
             }
             
-            serializer.endTag("", "spareparts");
+            serializer.endTag("", "droid_concepts");
             serializer.endDocument();
             serializer.flush();
             success = true;
@@ -244,7 +246,7 @@ public class ExtraTweaks extends PreferenceActivity {
                 switch (eventType) {
                     case XmlPullParser.START_TAG:
 						uiType = parser.getName().trim();
-						if (!uiType.equalsIgnoreCase("spareparts")) {
+						if (!uiType.equalsIgnoreCase("droid_concepts")) {
 						    Settings.System.putInt(getContentResolver(), uiType, Color.parseColor(parser.nextText()));
 						}						    
 						break;
