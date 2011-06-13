@@ -3,156 +3,408 @@ package com.droidconcepts.settings.activities;
 import com.droidconcepts.settings.R;
 
 import android.os.Bundle;
-import android.preference.CheckBoxPreference;
+import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceScreen;
 import android.provider.Settings;
 import android.provider.Settings.SettingNotFoundException;
-
+import android.content.ContentResolver;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.app.AlertDialog;
+import android.widget.EditText;
 import android.widget.Toast;
 import android.os.Environment;
-import java.io.File;
-import java.io.FileWriter;
+import android.os.AsyncTask;
+import android.app.ProgressDialog;
+import android.util.Log;
 import android.util.Xml;
-import org.xmlpull.v1.XmlSerializer;
-import java.util.ArrayList;
-import java.io.IOException;
 import android.graphics.Color;
-import java.io.FileReader;
-import java.io.FileNotFoundException;
+import android.content.Intent;
+import android.content.res.AssetManager;
+
+import org.xmlpull.v1.XmlSerializer;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserFactory;
 import org.xmlpull.v1.XmlPullParserException;
 
-public class ExtraTweaks extends PreferenceActivity {
+import java.util.ArrayList;
+import java.io.IOException;
+import java.io.FileReader;
+import java.io.FileNotFoundException;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.FileInputStream;
+import java.io.DataInputStream;
 
-    /* Reset to Defaults */
+public class ExtraTweaks extends PreferenceActivity implements Preference.OnPreferenceChangeListener {
+
     private static final String UI_RESET_TO_DEFAULTS = "reset_ui_tweaks_to_defaults";
+
+    private static final String UI_EXPORT_TO_XML = "save_theme";
+    private static final String UI_IMPORT_FROM_XML = "apply_theme";
+    private static final String NAMESPACE = "com.droidconcepts.settings";
+
+    private static final int WHITE = -1;
+    private static final int BLACK = -16777216;
+    private static final int SET_ON = 1;
+    private static final int SET_OFF = 0;
+
     private Preference mResetToDefaults;
-    /* XML */
-    private static final String XML_FILENAME = "droid_concepts_ui.xml";
-    private static final String UI_EXPORT_TO_XML = "export_to_xml";
-    private Preference mExportToXML;
-    private static final String UI_IMPORT_FROM_XML = "import_from_xml";
-    private Preference mImportFromXML;
+    private Preference mSaveTheme;
+    private static ListPreference mApplyTheme;
+    private EditText nameInput;
+
+    public static int gotFileList = 0;
+    public static String pickedTheme;
+    private static String[] filePickNames = {""};
+    private static String[] filePickValues = {""};
+
+    private ImportThemeTask mTask;
+
+    static Context mContext;
+    static AssetManager mAssetManager;
+    static ContentResolver cr;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        mContext = this.getBaseContext();
+        mAssetManager = getAssets();
+        cr = getContentResolver();
         setTitle(R.string.et_title);
+
+        mTask = (ImportThemeTask) getLastNonConfigurationInstance();
+        if (mTask != null) {
+            mTask.mActivity = this;
+        }
+
         addPreferencesFromResource(R.xml.extra_tweaks);
-
         PreferenceScreen prefSet = getPreferenceScreen();
-
-        /* Reset to Defaults */
+        if (!Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())) {
+            Toast.makeText(getApplicationContext(), R.string.xml_sdcard_unmounted, Toast.LENGTH_SHORT).show();
+            onDestroy();
+        }
         mResetToDefaults = prefSet.findPreference(UI_RESET_TO_DEFAULTS);
-        /* XML */
-        mExportToXML = prefSet.findPreference(UI_EXPORT_TO_XML);
-        mImportFromXML = prefSet.findPreference(UI_IMPORT_FROM_XML);
+        mSaveTheme = prefSet.findPreference(UI_EXPORT_TO_XML);
+        mApplyTheme = (ListPreference)prefSet.findPreference(UI_IMPORT_FROM_XML);
+
+        mApplyTheme.setEntries(filePickNames);
+        mApplyTheme.setEntryValues(filePickValues);
+        mApplyTheme.setOnPreferenceChangeListener(this);
+
+        Intent getList = new Intent("com.droidconcepts.settings.GET_THEME_LIST");
+        sendBroadcast(getList);
+    }
+
+    @Override
+    public Object onRetainNonConfigurationInstance() {
+        return mTask;
+    }
+
+    /**
+     * This builds the master file list for the load theme listpreference -
+     * it collects the files on the sd card under /DCTheme as well as built-in
+     * themes from DCParts/res/assets.
+     *
+     * This is called from .intent.catchThemeListReceiver with the
+     * @param sdList    file list from sdcard (or null)
+     * @param gotSDThemes    whether we were successful or not at getting this list
+     * @hide
+     */
+
+    public static void buildFileList(String[] sdList, boolean gotSDThemes) {
+        ArrayList<String> masterFileNames = new ArrayList<String>();
+        ArrayList<String> masterFileValues = new ArrayList<String>();
+        // First, grab built-in xml files
+        String[] builtinThemes = null;
+        try {
+            builtinThemes = mAssetManager.list("DCTheme");
+            } catch (IOException e) {}
+        int numthemes = builtinThemes.length;
+        if (builtinThemes != null && numthemes > 0) {
+            for (int i = 0; i < numthemes; i++) {
+                masterFileNames.add(builtinThemes[i].split(".xml")[0]);
+                masterFileValues.add("DCTheme/" + builtinThemes[i]);
+            }
+        }
+        // If we were successful at grabbing a list off the SD Card, add those to the arraylists
+        if (gotSDThemes) {
+            int numsdthemes = sdList.length;
+            for (int i = 0; i < numsdthemes; i++) {
+                try {
+                    masterFileNames.add(sdList[i].split(".xml")[0]);
+                    masterFileValues.add(sdList[i]);
+                } catch (ArrayIndexOutOfBoundsException e) { }// if name is no good, skip it
+            }
+        }
+        filePickNames = new String [masterFileNames.size()];
+        masterFileNames.toArray(filePickNames);
+        filePickValues = new String [masterFileValues.size()];
+        masterFileValues.toArray(filePickValues);
+        mApplyTheme.setEntryValues(filePickValues);
+        mApplyTheme.setEntries(filePickNames);
+        mApplyTheme.setEnabled(true);
+
     }
 
     public boolean onPreferenceTreeClick(PreferenceScreen preferenceScreen, Preference preference) {
-        boolean value;
         /* Reset to Defaults */
         if (preference == mResetToDefaults) {
             AlertDialog alertDialog = new AlertDialog.Builder(this).create();
             alertDialog.setTitle(getResources().getString(R.string.title_dialog_ui_interface));
             alertDialog.setMessage(getResources().getString(R.string.message_dialog_reset));
-            alertDialog.setButton(DialogInterface.BUTTON_POSITIVE, getResources().getString(android.R.string.ok), 
+            alertDialog.setButton(DialogInterface.BUTTON_POSITIVE, getResources().getString(android.R.string.ok),
                 new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int which) {
                     resetUITweaks();
                 }
             });
-            alertDialog.setButton(DialogInterface.BUTTON_NEGATIVE, getResources().getString(android.R.string.cancel), 
+            alertDialog.setButton(DialogInterface.BUTTON_NEGATIVE, getResources().getString(android.R.string.cancel),
             new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int which) {
-                    
+
                 }
             });
             alertDialog.show();
         }
-        else if (preference == mExportToXML) {
+        else if (preference == mSaveTheme) {
             AlertDialog alertDialog = new AlertDialog.Builder(this).create();
             alertDialog.setTitle(getResources().getString(R.string.title_dialog_ui_interface));
             alertDialog.setMessage(getResources().getString(R.string.message_dialog_export));
-            alertDialog.setButton(DialogInterface.BUTTON_POSITIVE, getResources().getString(android.R.string.ok), 
+
+            nameInput = new EditText(this);
+            alertDialog.setView(nameInput);
+
+            alertDialog.setButton(DialogInterface.BUTTON_POSITIVE, getResources().getString(android.R.string.ok),
             new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int which) {
-                    writeUIValuesToXML();
+                    String nameUnformatted = nameInput.getText().toString();
+                    if (nameUnformatted != null) {
+                        nameUnformatted = nameUnformatted.trim();
+                        if (nameUnformatted.length() < 1)
+                            nameUnformatted = "unnamed";
+                        String nameFormatted = nameUnformatted.replace(" ", "_");
+                        nameFormatted = nameFormatted.concat(".xml");
+                        writeUIValuesToXML(nameFormatted);
+                    }
                 }
             });
-            alertDialog.setButton(DialogInterface.BUTTON_NEGATIVE, getResources().getString(android.R.string.cancel), 
+            alertDialog.setButton(DialogInterface.BUTTON_NEGATIVE, getResources().getString(android.R.string.cancel),
             new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int which) {
-                    
-                }
-            });
-            alertDialog.show();      
-        }
-        else if (preference == mImportFromXML) {            
-            AlertDialog alertDialog = new AlertDialog.Builder(this).create();
-            alertDialog.setTitle(getResources().getString(R.string.title_dialog_ui_interface));
-            alertDialog.setMessage(getResources().getString(R.string.message_dialog_import));
-            alertDialog.setButton(DialogInterface.BUTTON_POSITIVE, getResources().getString(android.R.string.ok), 
-            new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int which) {
-                    readUIValuesFromXML();
-                }
-            });
-            alertDialog.setButton(DialogInterface.BUTTON_NEGATIVE, getResources().getString(android.R.string.cancel), 
-            new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int which) {
-                    
+
                 }
             });
             alertDialog.show();
         }
         return true;
     }
+
+    public boolean onPreferenceChange(Preference preference, Object picked) {
+        if (preference == mApplyTheme) {
+            if (picked != null) {
+                pickedTheme = (String)picked;
+                AlertDialog alertDialog = new AlertDialog.Builder(this).create();
+                alertDialog.setTitle(getResources().getString(R.string.title_dialog_ui_interface));
+                alertDialog.setMessage(getResources().getString(R.string.message_dialog_import));
+                alertDialog.setButton(DialogInterface.BUTTON_POSITIVE, getResources().getString(android.R.string.ok),
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        mTask = new ImportThemeTask(ExtraTweaks.this);
+                        mTask.execute();
+                    }
+                });
+                alertDialog.setButton(DialogInterface.BUTTON_NEGATIVE, getResources().getString(android.R.string.cancel),
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+
+                    }
+                });
+                alertDialog.show();
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private static class ImportThemeTask extends AsyncTask<Void, Integer, Void> {
+        public ExtraTweaks mActivity;
+        public ProgressDialog mProgress;
+
+        public ImportThemeTask(ExtraTweaks activity) {
+            mActivity = activity;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            mProgress = ProgressDialog.show(mActivity, "", "Loading theme. Please wait...", true);
+        }
+
+        @Override
+        protected void onProgressUpdate(Integer... params) {
+            switch (params[0]) {
+            case 0:
+                Toast.makeText(mContext, R.string.xml_sdcard_unmounted, Toast.LENGTH_SHORT).show();
+                break;
+            case 1:
+                Toast.makeText(mContext, R.string.xml_file_not_found, Toast.LENGTH_SHORT).show();
+                break;
+            case 2:
+                Toast.makeText(mContext, R.string.xml_io_exception, Toast.LENGTH_SHORT).show();
+                break;
+            case 3:
+                Toast.makeText(mContext, R.string.xml_parse_error, Toast.LENGTH_SHORT).show();
+                break;
+            case 4:
+                Toast.makeText(mContext, R.string.xml_invalid_color, Toast.LENGTH_SHORT).show();
+                break;
+            case 5:
+                Toast.makeText(mContext, R.string.xml_import_success, Toast.LENGTH_SHORT).show();
+                break;
+            }
+        }
+
+        @Override
+        protected Void doInBackground(Void... params) {
+            if (pickedTheme.contains("STOCK")) {
+                boolean sd = (pickedTheme == null);
+                File xmlFile = null;
+                FileReader freader = null;
+                InputStream iStream = null;
+                InputStreamReader isreader = null;
+                if (sd) {
+                    if (!Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())) {
+                        publishProgress(0);
+                        return null;
+                    }
+                    String fPath = "/data/" + NAMESPACE + "/tempfile.xml";
+                    xmlFile = new File(Environment.getDataDirectory() + fPath);
+                    try {
+                        freader = new FileReader(xmlFile);
+                    } catch (FileNotFoundException e) { }
+                } else {
+                    try {
+                        iStream = mAssetManager.open(pickedTheme);
+                        isreader = new InputStreamReader(iStream);
+                    } catch (IOException e) { }
+                }
+                boolean success = false;
+                try {
+                    XmlPullParserFactory factory = XmlPullParserFactory.newInstance();
+                    XmlPullParser parser = factory.newPullParser();
+
+                    if (sd) {
+                        parser.setInput(freader);
+                    } else {
+                        parser.setInput(isreader);
+                    }
+                    int eventType = parser.getEventType();
+                    String uiType = null;
+
+                    while (eventType != XmlPullParser.END_DOCUMENT) {
+                        switch (eventType) {
+                            case XmlPullParser.START_TAG:
+                                uiType = parser.getName().trim();
+                                if (!uiType.equalsIgnoreCase("dcs")) {
+                                    String val = parser.nextText();
+                                    if (val.contains("#")) {
+                                        Settings.System.putInt(cr, uiType, Color.parseColor(val));
+                                    } else {
+                                        Settings.System.putInt(cr, uiType, Integer.parseInt(val));
+                                    }
+                                }
+                                break;
+                        }
+                        eventType = parser.next();
+                    }
+                    success = true;
+                } catch (FileNotFoundException e) {
+                    publishProgress(1);
+                } catch (IOException e) {
+                    publishProgress(2);
+                } catch (XmlPullParserException e) {
+                    publishProgress(3);
+                } catch (IllegalArgumentException e) {
+                    publishProgress(4);
+                } finally {
+                    if (freader != null) {
+                        try {
+                            freader.close();
+                        } catch (IOException e) {
+                        }
+                    }
+                    if (isreader != null) {
+                        try {
+                            isreader.close();
+                        } catch (IOException e) {
+                        }
+                    }
+                }
+                if (success) {
+                    publishProgress(5);
+                }
+                if (xmlFile != null && xmlFile.exists()) {
+                    xmlFile.delete();
+                }
+            } else {
+                Intent mvSdUi = new Intent("com.droidconcepts.settings.RESTORE_DCS_UI");
+                mvSdUi.putExtra("filename", pickedTheme);
+                mActivity.sendBroadcast(mvSdUi);
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void result) {
+            mProgress.dismiss();
+        }
+    }
+
     private void resetUITweaks() {
-        Settings.System.putInt(getContentResolver(), Settings.System.CLOCK_COLOR, -16777216);
-        Settings.System.putInt(getContentResolver(), Settings.System.DATE_COLOR, -16777216);
-        Settings.System.putInt(getContentResolver(), Settings.System.SPN_LABEL_COLOR, -16777216);
-        Settings.System.putInt(getContentResolver(), Settings.System.PLMN_LABEL_COLOR, -16777216);
-        Settings.System.putInt(getContentResolver(), Settings.System.BATTERY_PERCENTAGE_STATUS_COLOR, -1);
-        Settings.System.putInt(getContentResolver(), Settings.System.NEW_NOTIF_TICKER_COLOR, -16777216);
-        Settings.System.putInt(getContentResolver(), Settings.System.NOTIF_COUNT_COLOR, -1);
-        Settings.System.putInt(getContentResolver(), Settings.System.NO_NOTIF_COLOR, -1);
-        Settings.System.putInt(getContentResolver(), Settings.System.CLEAR_BUTTON_LABEL_COLOR, -16777216);
-        Settings.System.putInt(getContentResolver(), Settings.System.ONGOING_NOTIF_COLOR, -1);
-        Settings.System.putInt(getContentResolver(), Settings.System.LATEST_NOTIF_COLOR, -1);
-        Settings.System.putInt(getContentResolver(), Settings.System.NOTIF_ITEM_TITLE_COLOR, -16777216);
-        Settings.System.putInt(getContentResolver(), Settings.System.NOTIF_ITEM_TEXT_COLOR, -16777216);
-        Settings.System.putInt(getContentResolver(), Settings.System.NOTIF_ITEM_TIME_COLOR, -16777216);
-        Settings.System.putInt(getContentResolver(), Settings.System.BATTERY_PERCENTAGE_STATUS_ICON,0);
-        Settings.System.putInt(getContentResolver(), Settings.System.SHOW_STATUS_CLOCK, 1);
-        Settings.System.putInt(getContentResolver(), Settings.System.SHOW_PLMN_LS, 1);
-        Settings.System.putInt(getContentResolver(), Settings.System.SHOW_SPN_LS, 1);
-        Settings.System.putInt(getContentResolver(), Settings.System.SHOW_PLMN_SB, 1);
-        Settings.System.putInt(getContentResolver(), Settings.System.SHOW_SPN_SB, 1);
-        
+        Settings.System.putInt(getContentResolver(), Settings.System.CLOCK_COLOR, BLACK);
+        Settings.System.putInt(getContentResolver(), Settings.System.DATE_COLOR, BLACK);
+        Settings.System.putInt(getContentResolver(), Settings.System.SPN_LABEL_COLOR, BLACK);
+        Settings.System.putInt(getContentResolver(), Settings.System.PLMN_LABEL_COLOR, BLACK);
+        Settings.System.putInt(getContentResolver(), Settings.System.BATTERY_PERCENTAGE_STATUS_COLOR, WHITE);
+        Settings.System.putInt(getContentResolver(), Settings.System.NEW_NOTIF_TICKER_COLOR, BLACK);
+        Settings.System.putInt(getContentResolver(), Settings.System.NOTIF_COUNT_COLOR, WHITE);
+        Settings.System.putInt(getContentResolver(), Settings.System.NO_NOTIF_COLOR, WHITE);
+        Settings.System.putInt(getContentResolver(), Settings.System.CLEAR_BUTTON_LABEL_COLOR, BLACK);
+        Settings.System.putInt(getContentResolver(), Settings.System.ONGOING_NOTIF_COLOR, WHITE);
+        Settings.System.putInt(getContentResolver(), Settings.System.LATEST_NOTIF_COLOR, WHITE);
+        Settings.System.putInt(getContentResolver(), Settings.System.NOTIF_ITEM_TITLE_COLOR, BLACK);
+        Settings.System.putInt(getContentResolver(), Settings.System.NOTIF_ITEM_TEXT_COLOR, BLACK);
+        Settings.System.putInt(getContentResolver(), Settings.System.NOTIF_ITEM_TIME_COLOR, BLACK);
+        Settings.System.putInt(getContentResolver(), Settings.System.BATTERY_PERCENTAGE_STATUS_ICON, SET_OFF);
+        Settings.System.putInt(getContentResolver(), Settings.System.SHOW_STATUS_CLOCK, SET_ON);
+        Settings.System.putInt(getContentResolver(), Settings.System.SHOW_PLMN_LS, SET_ON);
+        Settings.System.putInt(getContentResolver(), Settings.System.SHOW_SPN_LS, SET_ON);
+        Settings.System.putInt(getContentResolver(), Settings.System.SHOW_PLMN_SB, SET_ON);
+        Settings.System.putInt(getContentResolver(), Settings.System.SHOW_SPN_SB, SET_ON);
+        Settings.System.putInt(getContentResolver(), Settings.System.NOTIF_BAR_COLOR, WHITE);
+        Settings.System.putInt(getContentResolver(), Settings.System.NOTIF_BAR_CUSTOM, SET_OFF);
+        Settings.System.putInt(getContentResolver(), Settings.System.NOTIF_EXPANDED_BAR_COLOR, WHITE);
+        Settings.System.putInt(getContentResolver(), Settings.System.NOTIF_EXPANDED_BAR_CUSTOM, SET_OFF);
         Toast.makeText(getApplicationContext(), R.string.reset_ui_success, Toast.LENGTH_SHORT).show();
     }
-    private void writeUIValuesToXML() {
+    private void writeUIValuesToXML(String filename) {
         if (!Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())) {
             Toast.makeText(getApplicationContext(), R.string.xml_sdcard_unmounted, Toast.LENGTH_SHORT).show();
             return;
-        }        
-        
+        }
+        Intent mvUiSd = new Intent("com.droidconcepts.settings.SAVE_DCS_UI");
         FileWriter writer = null;
-        File outFile = new File(Environment.getExternalStorageDirectory() + "/" + "tempfile.xml");
+        File outFile = new File(Environment.getDataDirectory() + "/data/" + NAMESPACE + "/tempfile.xml");
         boolean success = false;
-        
-        try {            
+        try {
             outFile.createNewFile();
             writer = new FileWriter(outFile);
             XmlSerializer serializer = Xml.newSerializer();
-            
+
             ArrayList<String> elements = new ArrayList<String>();
             elements.add(Settings.System.BATTERY_PERCENTAGE_STATUS_COLOR);
             elements.add(Settings.System.CLOCK_COLOR);
@@ -168,36 +420,60 @@ public class ExtraTweaks extends PreferenceActivity {
             elements.add(Settings.System.NOTIF_ITEM_TITLE_COLOR);
             elements.add(Settings.System.NOTIF_ITEM_TEXT_COLOR);
             elements.add(Settings.System.NOTIF_ITEM_TIME_COLOR);
-            
+            elements.add(Settings.System.BATTERY_PERCENTAGE_STATUS_ICON);
+            elements.add(Settings.System.SHOW_STATUS_CLOCK);
+            elements.add(Settings.System.SHOW_PLMN_LS);
+            elements.add(Settings.System.SHOW_SPN_LS);
+            elements.add(Settings.System.SHOW_PLMN_SB);
+            elements.add(Settings.System.SHOW_SPN_SB);
+            elements.add(Settings.System.NOTIF_BAR_COLOR);
+            elements.add(Settings.System.NOTIF_BAR_CUSTOM);
+            elements.add(Settings.System.NOTIF_EXPANDED_BAR_COLOR);
+            elements.add(Settings.System.NOTIF_EXPANDED_BAR_CUSTOM);
+
             serializer.setOutput(writer);
             serializer.startDocument("UTF-8", true);
-            serializer.startTag("", "droid_concepts");
-            
-            int color = -1;
-            
+            serializer.startTag("", "dcs");
+
+            int color = WHITE;
+
             for (String s : elements) {
                 try {
                     color = Settings.System.getInt(getContentResolver(), s);
                 }
                 catch (SettingNotFoundException e) {
-                    if (s.equals(Settings.System.BATTERY_PERCENTAGE_STATUS_COLOR) ||
+                    if (s.equals(Settings.System.BATTERY_PERCENTAGE_STATUS_COLOR) ||  // all white colors
                             s.equals(Settings.System.NOTIF_COUNT_COLOR) ||
                             s.equals(Settings.System.NO_NOTIF_COLOR) ||
                             s.equals(Settings.System.ONGOING_NOTIF_COLOR) ||
-                            s.equals(Settings.System.LATEST_NOTIF_COLOR)) {
-                        color = -1;
+                            s.equals(Settings.System.LATEST_NOTIF_COLOR) ||
+                            s.equals(Settings.System.NOTIF_BAR_COLOR) ||
+                            s.equals(Settings.System.NOTIF_EXPANDED_BAR_COLOR)) {
+                        color = WHITE;
+                    } else
+                    if (s.equals(Settings.System.SHOW_STATUS_CLOCK) ||        // all default on items
+                            s.equals(Settings.System.SHOW_PLMN_LS) ||
+                            s.equals(Settings.System.SHOW_SPN_LS) ||
+                            s.equals(Settings.System.SHOW_PLMN_SB) ||
+                            s.equals(Settings.System.SHOW_SPN_SB)) {
+                        color = SET_ON;
+                    } else
+                    if (s.equals(Settings.System.BATTERY_PERCENTAGE_STATUS_ICON) ||         // all default off items
+                            s.equals(Settings.System.NOTIF_BAR_CUSTOM) ||
+                            s.equals(Settings.System.NOTIF_EXPANDED_BAR_CUSTOM)) {
+                        color = SET_OFF;
                     }
                     else {
-                        color = -16777216;
+                        color = BLACK;        // all black colors
                     }
                 }
-                
+
                 serializer.startTag("", s);
-                serializer.text(convertToARGB(color));
+                serializer.text((color < 0) ? convertToARGB(color) : Integer.toString(color)); // neg is a color, 0 or 1 is a switch
                 serializer.endTag("", s);
             }
-            
-            serializer.endTag("", "droid_concepts");
+
+            serializer.endTag("", "dcs");
             serializer.endDocument();
             serializer.flush();
             success = true;
@@ -214,95 +490,123 @@ public class ExtraTweaks extends PreferenceActivity {
 	        	}
 	        }
         }
-        
+
         if (success) {
-            File xmlFile = new File(Environment.getExternalStorageDirectory() + "/" + XML_FILENAME);
-            outFile.renameTo(xmlFile);
-            Toast.makeText(getApplicationContext(), R.string.xml_export_success, Toast.LENGTH_SHORT).show();
+            try {
+              FileInputStream infile = new FileInputStream(outFile);
+              DataInputStream in = new DataInputStream(infile);
+              byte[] b = new byte[in.available()];
+              in.readFully(b);
+              in.close();
+              String result = new String(b, 0, b.length);
+              mvUiSd.putExtra("xmldata", result);
+              mvUiSd.putExtra("filename", filename);
+            } catch (Exception e) {
+              e.printStackTrace();
+            }
+            sendBroadcast(mvUiSd);
         }
-        
         if (outFile.exists())
             outFile.delete();
     }
 
-    private void readUIValuesFromXML() {
-        if (!Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())) {
-            Toast.makeText(getApplicationContext(), R.string.xml_sdcard_unmounted, Toast.LENGTH_SHORT).show();
-            return;
+    public static void readUIValuesFromXML(String name) {
+        boolean sd = (name == null);
+        File xmlFile = null;
+        FileReader freader = null;
+        InputStream iStream = null;
+        InputStreamReader isreader = null;
+        if (sd) {
+            if (!Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())) {
+                Toast.makeText(mContext, R.string.xml_sdcard_unmounted, Toast.LENGTH_SHORT).show();
+                return;
+            }
+            xmlFile = new File(Environment.getDataDirectory() + "/data/" + NAMESPACE + "/tempfile.xml");
+            try {
+                freader = new FileReader(xmlFile);
+            } catch (FileNotFoundException e) { }
+        } else {
+            try {
+                iStream = mAssetManager.open(pickedTheme);
+                isreader = new InputStreamReader(iStream);
+            } catch (IOException e) { }
         }
-        
-        FileReader reader = null;
         boolean success = false;
-                
         try {
-            reader = new FileReader(new File(Environment.getExternalStorageDirectory() + "/" + XML_FILENAME));
             XmlPullParserFactory factory = XmlPullParserFactory.newInstance();
             XmlPullParser parser = factory.newPullParser();
-            parser.setInput(reader);
+
+            if (sd) {
+                parser.setInput(freader);
+            } else {
+                parser.setInput(isreader);
+            }
             int eventType = parser.getEventType();
             String uiType = null;
-            
+
             while (eventType != XmlPullParser.END_DOCUMENT) {
                 switch (eventType) {
-                    case XmlPullParser.START_TAG:
-						uiType = parser.getName().trim();
-						if (!uiType.equalsIgnoreCase("droid_concepts")) {
-						    Settings.System.putInt(getContentResolver(), uiType, Color.parseColor(parser.nextText()));
-						}						    
-						break;
+                case XmlPullParser.START_TAG:
+                    uiType = parser.getName().trim();
+                    if (!uiType.equalsIgnoreCase("dcs")) {
+                        String val = parser.nextText();
+                        if (val.contains("#")) {
+                            Settings.System.putInt(cr, uiType, Color.parseColor(val));
+                        } else {
+                            Settings.System.putInt(cr, uiType, Integer.parseInt(val));
+                        }
+                    }
+                    break;
                 }
                 eventType = parser.next();
             }
             success = true;
+        } catch (FileNotFoundException e) {
+            Toast.makeText(mContext, R.string.xml_file_not_found, Toast.LENGTH_SHORT).show();
+        } catch (IOException e) {
+            Toast.makeText(mContext, R.string.xml_io_exception, Toast.LENGTH_SHORT).show();
+        } catch (XmlPullParserException e) {
+            Toast.makeText(mContext, R.string.xml_parse_error, Toast.LENGTH_SHORT).show();
+        } catch (IllegalArgumentException e) {
+            Toast.makeText(mContext, R.string.xml_invalid_color, Toast.LENGTH_SHORT).show();
+        } finally {
+            if (freader != null) {
+                try {
+                    freader.close();
+                } catch (IOException e) { }
+            }
+            if (isreader != null) {
+                try {
+                    isreader.close();
+                } catch (IOException e) { }
+            }
         }
-        catch (FileNotFoundException e) {
-            Toast.makeText(getApplicationContext(), R.string.xml_file_not_found, Toast.LENGTH_SHORT).show();
-        }
-        catch (IOException e) {
-            Toast.makeText(getApplicationContext(), R.string.xml_io_exception, Toast.LENGTH_SHORT).show();
-        }
-        catch (XmlPullParserException e) {
-            Toast.makeText(getApplicationContext(), R.string.xml_parse_error, Toast.LENGTH_SHORT).show();
-        }
-        catch (IllegalArgumentException e) {
-            Toast.makeText(getApplicationContext(), R.string.xml_invalid_color, Toast.LENGTH_SHORT).show();
-        }
-        finally {
-            if (reader != null) {
-        		try {
-	        	    reader.close();
-	        	} catch (IOException e) {
-	        	}
-	        }
-        }
-        
         if (success) {
-            Toast.makeText(getApplicationContext(), R.string.xml_import_success, Toast.LENGTH_SHORT).show();
-        } 
+            Toast.makeText(mContext, R.string.xml_import_success, Toast.LENGTH_SHORT).show();
+        }
+        if (xmlFile != null && xmlFile.exists())
+            xmlFile.delete();
     }
 
     private String convertToARGB(int color) {
         String alpha = Integer.toHexString(Color.alpha(color));
         String red = Integer.toHexString(Color.red(color));
         String green = Integer.toHexString(Color.green(color));
-        String blue = Integer.toHexString(Color.blue(color));        
-        
+        String blue = Integer.toHexString(Color.blue(color));
+
         if (alpha.length() == 1) {
             alpha = "0" + alpha;
         }
-        
         if (red.length() == 1) {
             red = "0" + red;
         }
-        
         if (green.length() == 1) {
             green = "0" + green;
         }
-        
         if (blue.length() == 1) {
             blue = "0" + blue;
         }
-        
         return "#" + alpha + red + green + blue;
     }
 }
+

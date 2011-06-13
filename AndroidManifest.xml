@@ -21,6 +21,18 @@
             </intent-filter>
         </receiver>
 
+        <receiver android:name=".intents.MvsduiReceiver" android:enabled="true">
+            <intent-filter>
+                <action android:name="com.droidconcepts.settings.helper.RESTORE_DCS_UI"></action>
+            </intent-filter>
+        </receiver>
+
+        <receiver android:name=".intents.CatchThemeListReceiver" android:enabled="true">
+            <intent-filter>
+                <action android:name="com.droidconcepts.settings.helper.GET_THEME_LIST"></action>
+            </intent-filter>
+        </receiver>
+
     <activity android:name=".activities.MainActivity">
             <intent-filter>
                 <action   android:name="android.intent.action.MAIN"/>
