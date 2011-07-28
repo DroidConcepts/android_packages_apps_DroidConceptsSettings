@@ -37,6 +37,13 @@
     <string name="spareparts_title">Spare Parts</string>
     <string name="terminal_title">Terminal</string>
 
+<!-- Input Strings -->
+    <string name="lockscreen_settings_title">Lockscreen settings</string>
+    <string name="pref_lockscreen_music_controls_title">Lockscreen music controls</string>
+    <string name="pref_lockscreen_music_controls_summary">Displays music controls on the lockscreen</string>
+    <string name="pref_lockscreen_always_music_controls_title">Always display music controls</string>
+    <string name="pref_lockscreen_always_music_controls_summary">Display music controls regardless of whether or not music is playing</string>
+
 <!-- User interface -->
     <string name="ui_title">User interface</string>
     <string name="ui_summary">User interface settings and tweaks</string>
@@ -121,7 +128,6 @@
     <string name="summary_apply_theme">Pick from a pre-made theme or a saved one on your SD card</string>
     <string name="title_save_theme">Save current theme</string>
     <string name="summary_save_theme">Save the current color settings to your SD card</string>
-
     <!-- Notification Bar Colors -->
     <string name="title_notification_bar">Notification bar</string>
     <string name="title_custom_not_bar">Custom notification bar</string>
