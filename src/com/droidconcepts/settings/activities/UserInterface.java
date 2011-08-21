@@ -3,12 +3,18 @@ package com.droidconcepts.settings.activities;
 import com.droidconcepts.settings.R;
 
 import android.os.Bundle;
+import android.os.IBinder;
+import android.os.Parcel;
+import android.os.RemoteException;
+import android.os.ServiceManager;
 import android.preference.CheckBoxPreference;
+import android.preference.ListPreference;
 import android.preference.Preference;
+import android.preference.Preference.OnPreferenceChangeListener;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceScreen;
 import android.provider.Settings;
-import android.provider.Settings.SettingNotFoundException;
+
 
 public class UserInterface extends PreferenceActivity {
 	
@@ -139,7 +145,7 @@ public class UserInterface extends PreferenceActivity {
     }
 
     public boolean onPreferenceChange(Preference preference, Object newValue) {
-        } else if (preference == mScreenLockTimeoutDelayPref) {
+        if (preference == mScreenLockTimeoutDelayPref) {
             int timeoutDelay = Integer.valueOf((String)newValue);
             Settings.System.putInt(getContentResolver(), Settings.System.SCREEN_LOCK_TIMEOUT_DELAY, timeoutDelay);
             return true;
