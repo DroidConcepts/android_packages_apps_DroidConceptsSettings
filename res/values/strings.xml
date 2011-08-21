@@ -39,7 +39,7 @@
 
 <!-- Input Strings -->
     <string name="input_settings_title">Input settings</string>
-    <string name="input_settings_summary">Control button behavior</string>
+    <string name="input_settings_summary">Extra imput settings</string>
     <string name="lockscreen_settings_title">Lockscreen settings</string>
     <string name="pref_lockscreen_music_controls_title">Lockscreen music controls</string>
     <string name="pref_lockscreen_music_controls_summary">Displays music controls on the lockscreen</string>
@@ -54,7 +54,14 @@
     <string name="pref_rotation_90_title">90 degrees</string>
     <string name="pref_rotation_180_title">180 degrees</string>
     <string name="pref_rotation_270_title">270 degrees</string>
+    <!-- Screen Timout -->
     <string name="ui_other_title">Other</string>
+    <string name="ui_lockscreen_title">Screen lock settings</string>
+    <string name="pref_lockscreen_delay_title">Delay</string>
+    <string name="pref_lockscreen_timeout_lock_delay">Screen timeout delay</string>
+    <string name="pref_lockscreen_screenoff_lock_delay">Screen turned off delay</string>
+    <string name="pref_lockscreen_timeout_lock_delay_summary">How long to delay before enabling screen lock when screen times out</string>
+    <string name="pref_lockscreen_screenoff_lock_delay_summary">How long to delay before enabling screen lock when screen is turned off</string>
     <!-- Color Picker -->
     <string name="title_color_picker">Pick a color</string>
     <string name="msg_color_picker">Tap on center color to confirm.\nPress back to cancel.</string>

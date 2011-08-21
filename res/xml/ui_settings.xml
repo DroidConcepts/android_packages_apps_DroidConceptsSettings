@@ -11,6 +11,24 @@
                             android:title="@string/pref_rotation_270_title" />
     </PreferenceCategory>
 
+<!-- screen timeout delay -->
+    <PreferenceCategory android:title="@string/ui_lockscreen_title">
+        <ListPreference android:key="pref_lockscreen_timeout_delay" 
+                        android:dialogTitle="@string/pref_lockscreen_delay_title"
+                        android:title="@string/pref_lockscreen_timeout_lock_delay" 
+                        android:summary="@string/pref_lockscreen_timeout_lock_delay_summary"
+                        android:entries="@array/pref_lockscreen_delay_entries" 
+                        android:entryValues="@array/pref_lockscreen_delay_values" />
+
+<!-- screen off delay -->
+        <ListPreference android:key="pref_lockscreen_screenoff_delay" 
+                        android:dialogTitle="@string/pref_lockscreen_delay_title"
+                        android:title="@string/pref_lockscreen_screenoff_lock_delay" 
+                        android:summary="@string/pref_lockscreen_screenoff_lock_delay_summary"
+                        android:entries="@array/pref_lockscreen_delay_entries" 
+                        android:entryValues="@array/pref_lockscreen_delay_values" />
+    </PreferenceCategory>
+
 <!-- Expanded View Power Widget -->
    <PreferenceCategory android:title="@string/title_expanded_widget">
       <CheckBoxPreference android:key="expanded_widget"

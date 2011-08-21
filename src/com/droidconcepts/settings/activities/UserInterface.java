@@ -24,6 +24,8 @@ public class UserInterface extends PreferenceActivity {
     private static final String UI_EXP_WIDGET_COLOR = "expanded_color_mask";
     private static final String UI_EXP_WIDGET_PICKER = "widget_picker";
     private static final String UI_EXP_WIDGET_HIDE_ONCHANGE = "expanded_hide_onchange";
+    private static final String LOCKSCREEN_TIMEOUT_DELAY_PREF = "pref_lockscreen_timeout_delay";
+    private static final String LOCKSCREEN_SCREENOFF_DELAY_PREF = "pref_lockscreen_screenoff_delay";
 	
     private PreferenceScreen mBatteryClockScreen;
     private PreferenceScreen mDateProviderScreen;
@@ -36,6 +38,8 @@ public class UserInterface extends PreferenceActivity {
     private Preference mPowerWidgetColor;
     private PreferenceScreen mPowerPicker;
     private CheckBoxPreference mPowerWidgetHideOnChange;
+    private ListPreference mScreenLockTimeoutDelayPref;
+    private ListPreference mScreenLockScreenOffDelayPref;
 
 
     @Override
@@ -62,6 +66,17 @@ public class UserInterface extends PreferenceActivity {
         mRotation90Pref.setChecked((mode & 1) != 0);
         mRotation180Pref.setChecked((mode & 2) != 0);
         mRotation270Pref.setChecked((mode & 4) != 0);
+
+        /* Screen Lock */
+        mScreenLockTimeoutDelayPref = (ListPreference) prefSet.findPreference(LOCKSCREEN_TIMEOUT_DELAY_PREF);
+        int timeoutDelay = Settings.System.getInt(getContentResolver(), Settings.System.SCREEN_LOCK_TIMEOUT_DELAY, 5000);
+        mScreenLockTimeoutDelayPref.setValue(String.valueOf(timeoutDelay));
+        mScreenLockTimeoutDelayPref.setOnPreferenceChangeListener(this);
+
+        mScreenLockScreenOffDelayPref = (ListPreference) prefSet.findPreference(LOCKSCREEN_SCREENOFF_DELAY_PREF);
+        int screenOffDelay = Settings.System.getInt(getContentResolver(), Settings.System.SCREEN_LOCK_SCREENOFF_DELAY, 0);
+        mScreenLockScreenOffDelayPref.setValue(String.valueOf(screenOffDelay)); 
+        mScreenLockScreenOffDelayPref.setOnPreferenceChangeListener(this);
 
         /* Expanded View Power Widget */
         mPowerWidget = (CheckBoxPreference) prefSet.findPreference(UI_EXP_WIDGET);
@@ -121,6 +136,20 @@ public class UserInterface extends PreferenceActivity {
         }
 
         return true;
+    }
+
+    public boolean onPreferenceChange(Preference preference, Object newValue) {
+        } else if (preference == mScreenLockTimeoutDelayPref) {
+            int timeoutDelay = Integer.valueOf((String)newValue);
+            Settings.System.putInt(getContentResolver(), Settings.System.SCREEN_LOCK_TIMEOUT_DELAY, timeoutDelay);
+            return true;
+        } else if (preference == mScreenLockScreenOffDelayPref) {
+            int screenOffDelay = Integer.valueOf((String)newValue);
+            Settings.System.putInt(getContentResolver(), Settings.System.SCREEN_LOCK_SCREENOFF_DELAY, screenOffDelay);
+            return true;
+
+        }
+        return false;
     }
 
     private int readWidgetColor() {
