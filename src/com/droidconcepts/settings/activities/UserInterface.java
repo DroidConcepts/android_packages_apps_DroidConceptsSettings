@@ -17,7 +17,7 @@ import android.provider.Settings;
 import android.provider.Settings.SettingNotFoundException;
 
 
-public class UserInterface extends PreferenceActivity {
+public class UserInterface extends PreferenceActivity implements OnPreferenceChangeListener {
 	
     /* Preference Screens */
     private static final String BATTERY_CLOCK_SCREEN = "battery_clock_settings";
